@@ -50,7 +50,7 @@ Slack Api 는 관련 예제를 찾아보기 힘들었다, <br>
 ```
 
 이 Scope 들은 앱 생성 시 설정한 Permission을 기준으로 설정했어야 하는데 처음에는 아무리 동일하게 맞춰도 `Invalid Scope` 에러가 뜨면서 적용되지 않았다.. 
-![slack1](./images/slack1.png)
+![slack1](https://github.com/vincent-k-sm/Blog/raw/master/iOS/%ED%9A%8C%EA%B3%A0/%EC%9B%8C%ED%81%AC%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC/images/slack1.png)
 
 <br>
 
@@ -60,7 +60,7 @@ Slack Api 는 관련 예제를 찾아보기 힘들었다, <br>
  
 <br>
 
-![slack1](./images/slack2.png)
+![slack1](https://github.com/vincent-k-sm/Blog/raw/master/iOS/%ED%9A%8C%EA%B3%A0/%EC%9B%8C%ED%81%AC%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC/images/slack2.png)
 
 ## 마치며 
 Slack Api는 별도의 SDK 제공없이 public 한 웹 프론트 기반 api로 document가 구성되어있어 예상보다 진입장벽이 좀 있었다,<br>

@@ -53,7 +53,8 @@ textfield 에 커스텀 Toolbar를 적용하는데에 이슈가 발생했다.<br
 Snapkit 버전이나 환경은 계속 업데이트 될 것으로 보여 오랜만에 기본으로 작업하게 되었다
 
 AS-IS
-![textfield_old](./images/textfield_old.png)
+
+![textfield_old](https://github.com/vincent-k-sm/Blog/raw/master/iOS/%ED%9A%8C%EA%B3%A0/%EC%9B%8C%ED%81%AC%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC/images/textfield_old.png)
 
 
 TO-BE

@@ -56,51 +56,53 @@ Firestore를 연동하면서 발생한 설계 상 고민 포인트와 어려웠�
 > 또한 매 일 00시를 기준하여 하루치의 `document`를 생성하여 관리한다 <br>
 > `Document` 에 접근할 때마다 사용량이 증가함에 따른 부가적인 이슈는 아래와 같이 대응했다
   
-![firestore](./images/firestore_2.png)
+![firestore](https://github.com/vincent-k-sm/Blog/raw/master/iOS/%ED%9A%8C%EA%B3%A0/%EC%9B%8C%ED%81%AC%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC/images/firestore_2.png)
 
 ### 사용량에 따라 무료 할당량을 초과하면 비용이 발생한다
 * 서비스가 커지면.. (행복회로) 어쩔 수 없는 부분이나 직접 백엔드를 구현했다면 쉽게 해결 될 요소였던 것 같다.
 * 일례로 메인 화면에 진입하게 되면 제공되는 데이터는 `주간 데이터`, `오늘 데이터`, `월간데이터` 를 모두가져와야 했다
   * 이 때 해당 화면이 `ViewDid/WillAppear`되면 각 각 호출하는게 맞을 수 있지만, <br>
   이번에는 최초 Load 시점에 월간데이터를 가져오고, 이를 내부 `WorkInfoManager`에 통합하여 관리하도록 처리했다.
-  ```swift
-  typealias WorkInfoManagerWorkInfosBlock = ([WorkStatusInfo]) -> Void
-  typealias WorkInfoManagerSuccess = (Bool) -> Void
-  typealias WorkInfoManagerFailure = (Error) -> Void
+  
+```swift
+typealias WorkInfoManagerWorkInfosBlock = ([WorkStatusInfo]) -> Void
+typealias WorkInfoManagerSuccess = (Bool) -> Void
+typealias WorkInfoManagerFailure = (Error) -> Void
 
-  final class WorkInfoManager {
-    static let shared = WorkInfoManager()
-    let networkService: FirebaseWorkNetworkService!
-    
-    private var cancelables: Set<AnyCancellable> = []
-    
-    // MARK: Properties
-    private(set) var workStatusInfos: [String: [WorkStatusInfo]] = [:]
-    
-    deinit {
-      ...
-    }
-  }
-  ```
-  > 여기서 `workStatusInfo`는 월간데이터(캘린더)의 이전 / 다음 월로 넘길 때 조금 더 빠르게 데이터를 가져오기 위해 Dictionary 형태로 사용했다
+final class WorkInfoManager {
+static let shared = WorkInfoManager()
+let networkService: FirebaseWorkNetworkService!
+
+private var cancelables: Set<AnyCancellable> = []
+
+// MARK: Properties
+private(set) var workStatusInfos: [String: [WorkStatusInfo]] = [:]
+
+deinit {
+  ...
+}
+}
+```
+> 여기서 `workStatusInfo`는 월간데이터(캘린더)의 이전 / 다음 월로 넘길 때 조금 더 빠르게 데이터를 가져오기 위해 Dictionary 형태로 사용했다
 
 * 이 후 네트워킹 이 후 변경사항에 대해 각 항목을 업데이트 하도록 처리하여 모든 화면에 동일하게 반영될 수 있도록 처리했다
-  ```swift
-  func updateWorkInfo(info: WorkStatusInfo) {
-      let workMonth = info.workMonth
-      info.updateIsNotEnded()
-      if let currentWorkMonth = self.workStatusInfos[workMonth],
-          let firstIndex = currentWorkMonth.firstIndex(where: { $0.workDate == info.workDate }) {
-          self.workStatusInfos[workMonth]?[firstIndex] = info
-  
-      }
-      else {
-          self.workStatusInfos[workMonth]?.append(info)
-      }
-      
-      self.refreshEvent.send() // refresh Trigger로 탭바 내 관련 데이터를 갱신하도록 한다
+
+```swift
+func updateWorkInfo(info: WorkStatusInfo) {
+  let workMonth = info.workMonth
+  info.updateIsNotEnded()
+  if let currentWorkMonth = self.workStatusInfos[workMonth],
+      let firstIndex = currentWorkMonth.firstIndex(where: { $0.workDate == info.workDate }) {
+      self.workStatusInfos[workMonth]?[firstIndex] = info
+
   }
-  ```
+  else {
+      self.workStatusInfos[workMonth]?.append(info)
+  }
+  
+  self.refreshEvent.send() // refresh Trigger로 탭바 내 관련 데이터를 갱신하도록 한다
+}
+```
 
 
 
@@ -218,7 +220,7 @@ extension FirebaseWorkNetworkUseCase {
 ### Select 시 `JOIN`에 대한 개념이 없다
 * `색인` 을 사용하면 목적과 유사하게 동작할 수 있으나, 잘못된 색인으로 이슈를 야기하기보다 <br> 데이터 내 실제로 참조할 값을 최대한 많이 적용하는 방법으로 수립했다<br>
 아래 예시는 Document ID가 날짜로 선언되어있지만, <br>Select할 때 특정 document ID 를 기준으로 가져올 수 없음에 따라 document내에 날짜정보를 추가로 작성하였다
-![firestore](./images/firestore_3.png)
+![firestore](https://github.com/vincent-k-sm/Blog/raw/master/iOS/%ED%9A%8C%EA%B3%A0/%EC%9B%8C%ED%81%AC%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC/images/firestore_3.png)
 
 상기 설계를 통해 아래와 같은 호출이 가능하다
 > eg. 접속한 날짜를 기준으로 월~일요일까지 주간 데이터를 가져오는 기능
