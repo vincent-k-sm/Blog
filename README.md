@@ -1,1 +1,1 @@
-Blog
+* https://smkdir.tistory.com/
